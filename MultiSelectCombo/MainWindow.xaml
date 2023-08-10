@@ -8,9 +8,11 @@
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
         <local:DataSource x:Key="ds" d:IsDataSource="True"/>
+        <CollectionViewSource x:Key="cvs" Source="{Binding Source={StaticResource ds}, Path=Strings}" CollectionViewType="{x:Type local:TestCollectionView}"/>
     </Window.Resources>
     <Grid>
         <local:MSComboBox ItemsSource="{Binding Source={StaticResource ds}, Path=Data}" Margin="272,96,297,296" />
-        <local:MSComboBox ItemsSource="{Binding Source={StaticResource ds}, Path=Strings}" Margin="272,260,297,132" />
+        <local:MSComboBox x:Name="StringMSC" ItemsSource="{Binding Source={StaticResource cvs}}" Margin="388,245,182,147" />
+        <ItemsControl ItemsSource="{Binding ElementName=StringMSC, Path=SelectedObjects}" Margin="37,232,444,55"/>
     </Grid>
 </Window>

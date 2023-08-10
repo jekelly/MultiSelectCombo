@@ -341,8 +341,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <CheckBox Grid.Column="0"/>
-                                <ContentPresenter Grid.Column="1" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                <CheckBox Grid.Column="0" IsChecked="{Binding Mode=TwoWay, Path=IsSelected}"/>
+                                <ContentPresenter Grid.Column="1" Content="{Binding Object}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
