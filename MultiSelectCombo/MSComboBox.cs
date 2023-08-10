@@ -2,8 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -56,6 +60,57 @@ namespace MultiSelectCombo
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MSComboBox), new FrameworkPropertyMetadata(typeof(MSComboBox)));
             ComboBox.ItemsSourceProperty.AddOwner(typeof(MSComboBox), new FrameworkPropertyMetadata(OnItemsSourceChanged));
         }
+
+        public MSComboBox()
+        {
+            ((INotifyCollectionChanged)_selectedItems).CollectionChanged += MSComboBox_CollectionChanged;
+        }
+
+        private void MSComboBox_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            this.CoerceValue(SelectedObjectsSummaryProperty);
+        }
+
+        public IValueConverter SummaryConverter
+        {
+            get { return (IValueConverter)GetValue(SummaryConverterProperty); }
+            set { SetValue(SummaryConverterProperty, value); }
+        }
+
+
+        public string SelectedObjectsSummary
+        {
+            get { return (string)GetValue(SelectedObjectsSummaryProperty); }
+        }
+
+        // Using a DependencyProperty as the backing store for SelectedObjectsSummary.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SelectedObjectsSummaryProperty =
+            DependencyProperty.Register("SelectedObjectsSummary", typeof(string), typeof(MSComboBox), new PropertyMetadata(null, null, CoerceSummary));
+
+        private static object CoerceSummary(DependencyObject d, object baseValue)
+        {
+            return ((MSComboBox)d).SummaryConverter.Convert(((MSComboBox)d).SelectedObjects, typeof(string), null, CultureInfo.CurrentCulture);
+        }
+
+        // Using a DependencyProperty as the backing store for SummaryConverter.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SummaryConverterProperty =
+            DependencyProperty.Register("SummaryConverter", typeof(IValueConverter), typeof(MSComboBox), new PropertyMetadata(new DefaultConverter()));
+
+        private class DefaultConverter : IValueConverter
+        {
+            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                IEnumerable<object> objects = (IEnumerable<object>)value;
+
+                return string.Join(",", objects.Select(o => o.ToString()));
+            }
+
+            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
